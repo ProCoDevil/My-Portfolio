@@ -1,0 +1,136 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    text-align: center;
+    font-family: 'Merriweather', serif;
+}
+.head-container{   
+     background-color: #E4F5F9;
+     padding-top: 100px;
+}
+h1{
+    font-family: 'Sacramento', cursive;
+    padding: 15px;
+    font-size: 5.5rem;
+    color: #66BFBF;
+    line-height: 2;
+}
+.second{
+    position: absolute;   
+    left: 190px; 
+}
+.first{
+    position: relative;
+    left: 25%;
+    top: -30px;
+}
+p{
+    font-family: 'Merriweather', serif;
+    font-weight: normal;
+}
+h2{
+    font-size: 2rem;
+    color: #66BFBF;
+    font-family: 'Montserrat', sans-serif;
+}
+h3{
+    color: #11999E;
+    
+    font-family: 'Montserrat' , sans-serif;
+}
+.skills{
+    margin-top: 70px;
+}
+.skill-row{
+    width: 50%;
+    margin: 100px auto 100px auto;
+    text-align: left;
+    line-height: 2;
+}
+.chillies{
+    width: 25%;
+    float: left;
+    margin-right: 30px;
+}
+.com{
+    width: 25%;
+    float: right;
+    margin-left: 30px;
+    border-radius: 100%;
+}
+.profile p{
+    width: 450px;
+    margin: auto;
+    padding:10px ;
+    text-align: center;
+}
+.profile img{
+    width: 177px;
+    padding: 10px;
+    height: 177px;
+}
+.profile{
+    margin: 100px auto;
+    width: 50%;
+    line-height: 2;
+}
+hr {
+    border: 7px dotted;
+    border-style: dotted none none none;
+    height: 2px;
+    width: 8%;
+    color: #c5f0f0;
+    margin: auto;
+    
+    }
+.contact-me{
+    margin-top: 70px;
+   
+}
+.contact-me h3{
+    margin-top: 40px;
+}
+.btn {
+    background: #11cdd4;
+    background-image: -webkit-linear-gradient(top, #11cdd4, #11999e);
+    border-radius: 8px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+  }
+  
+  .btn:hover {
+    background: #30e3cb;
+    background-image: -webkit-linear-gradient(top, #30e3cb, #2bc4ad);
+    text-decoration: none;
+  }
+
+ .contact-me p{
+    margin: 40px auto;
+    width: 400px;
+    line-height: 2;
+  } 
+.bottom-container{
+    margin-top: 100px;
+    width: 100%;
+    height: 150px;
+    background-color: #66BFBF;
+  }
+  .bottom-container p{
+    color: #fff;
+    font-size: 10px;
+    margin: 78px auto;
+  }
+  .bottom-container .footer-link{
+    text-decoration: none;
+    position: relative;
+    color: #11999E;
+    top: 50px;
+    align-items: center;
+    padding:10px;
+  }
