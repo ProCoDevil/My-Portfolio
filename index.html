@@ -550,15 +550,13 @@
         @media (min-width: 600px) {
             .controls-row {
                 flex-direction: row;
-                flex-wrap: nowrap; /* Sab kuch ek hi line mein rahega */
+                flex-wrap: nowrap; 
                 align-items: center;
                 gap: 12px;
             }
             .controls-row input { flex: 2; min-width: 150px; }
             .filter-sort-row { flex: 2; gap: 12px; }
-            /* min-width: 0 lagana zaroori hai flexbox mein text truncate karne ke liye */
             .filter-sort-row select { flex: 1; min-width: 0; } 
-            /* Button ab sirf utni jagah lega jitni zaroorat hai */
             .controls-row .primary { flex: 0 0 auto; width: auto !important; padding: 16px 24px; }
         }
     </style>
@@ -613,7 +611,7 @@
                 <button class="primary" style="width: 100%; margin-bottom: 16px;" onclick="handleCreateVault()">Create New Vault</button>
                 <button class="primary" style="width: 100%;" onclick="handleOpenVault()">Open Existing Vault</button>
                 
-                <!-- New Gamified Badges utilizing the empty space -->
+                <!-- Gamified Badges -->
                 <div class="auth-features">
                     <div class="feature-badge">📴 Offline</div>
                     <div class="feature-badge">🛡️ AES-256</div>
@@ -640,7 +638,6 @@
                 <span id="vault-status" class="badge">Locked</span>
             </div>
             <div class="header-actions">
-                <!-- New Category Manager Button added here -->
                 <button onclick="openCategories()" class="icon-btn icon-btn-primary-hover" aria-label="Categories">
                     <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                 </button>
@@ -733,7 +730,7 @@
             
             <div style="display: flex; gap: 10px;">
                 <button class="primary" style="flex: 1;" onclick="saveEntry()">Save Entry</button>
-                <button id="btn-delete-entry" style="background: var(--color-danger); color: var(--color-primary-text); display: none;" onclick="deleteEntry()">Delete</button>
+                <button id="btn-delete-entry" style="background: var(--color-danger); color: #fff; display: none;" onclick="deleteEntry()">Delete</button>
             </div>
         </div>
     </div>
@@ -771,18 +768,18 @@
             <h3>Change Master Password</h3>
             <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; font-weight: 600;">Re-encrypts the vault.</p>
             <input type="password" id="new-master-password" placeholder="New Master Password" class="mono">
-            <button onclick="changeMasterPassword()" style="margin-bottom: 30px;">Update Password</button>
+            <button class="primary" onclick="changeMasterPassword()" style="margin-bottom: 30px; width: 100%;">Update Password</button>
 
             <h3>Data Management</h3>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="exportVault()">Export (JSON)</button>
-                <button onclick="document.getElementById('import-file').click()">Import (JSON)</button>
+                <button class="secondary" style="flex: 1;" onclick="exportVault()">Export (JSON)</button>
+                <button class="secondary" style="flex: 1;" onclick="document.getElementById('import-file').click()">Import (JSON)</button>
                 <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importVault(event)">
             </div>
         </div>
     </div>
 
-    <!-- Custom Gamified Modal to replace blocked prompt/confirm alerts -->
+    <!-- Custom Gamified Modal -->
     <div id="custom-modal" class="screen hidden" style="background: rgba(10, 15, 20, 0.85); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
         <div class="auth-container" style="width: 100%; max-width: 400px; padding: 30px;">
             <h3 id="modal-title" style="margin-bottom: 16px; font-size: 22px;">Title</h3>
@@ -973,12 +970,16 @@ async function decryptVault(ivB64, ciphertextB64, key) {
 }
 
 /* ==========================================================================
-   FILE I/O & FALLBACK
+   FILE I/O & FALLBACK (Mobile-safe version)
    ========================================================================== */
 async function initStorage() {
-    if (!window.showOpenFilePicker) {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIframe = window !== window.parent;
+    
+    if (!window.showOpenFilePicker || isMobile || isIframe) {
         state.fallbackMode = true;
         $('fallback-banner').style.display = 'block';
+        $('fallback-banner').textContent = isMobile ? 'Mobile detected. Using secure local storage.' : 'Browser restricted. Using secure local fallback storage.';
         initIndexedDB();
     }
 }
@@ -1018,20 +1019,19 @@ async function saveToFile(vaultJSON) {
         setUnsaved(false);
         showToast('Vault saved securely.');
     } catch (e) {
-        if (e.name === 'SecurityError' || (e.message && e.message.includes('cross-origin'))) {
-            console.warn("File System API restricted. Falling back to IndexedDB.", e);
-            state.fallbackMode = true;
-            $('fallback-banner').style.display = 'block';
-            if (!state.db) initIndexedDB();
-            
-            const checkDB = () => {
-                if (state.db) saveToFile(vaultJSON);
-                else setTimeout(checkDB, 50);
-            };
-            checkDB();
-            return;
-        }
-        if (e.name !== 'AbortError') showToast('Error saving file: ' + e.message);
+        if (e.name === 'AbortError') return;
+        console.warn("File System API restricted or failed. Falling back to IndexedDB.", e);
+        state.fallbackMode = true;
+        $('fallback-banner').style.display = 'block';
+        $('fallback-banner').textContent = 'File API restricted. Using secure local fallback storage.';
+        
+        if (!state.db) initIndexedDB();
+        
+        const checkDB = () => {
+            if (state.db) saveToFile(vaultJSON);
+            else setTimeout(checkDB, 50);
+        };
+        checkDB();
     }
 }
 
@@ -1062,15 +1062,13 @@ async function loadFromFile(action) {
         const text = await file.text();
         return JSON.parse(text);
     } catch (e) {
-        if (e.name === 'SecurityError' || (e.message && e.message.includes('cross-origin'))) {
-            console.warn("File System API restricted. Falling back to IndexedDB.", e);
-            state.fallbackMode = true;
-            $('fallback-banner').style.display = 'block';
-            if (!state.db) initIndexedDB();
-            return loadFromFile(action);
-        }
-        if (e.name !== 'AbortError') showToast('Error opening file: ' + e.message);
-        return null;
+        if (e.name === 'AbortError') return null;
+        console.warn("File System API restricted. Falling back to IndexedDB.", e);
+        state.fallbackMode = true;
+        $('fallback-banner').style.display = 'block';
+        $('fallback-banner').textContent = 'File API restricted. Using secure local fallback storage.';
+        if (!state.db) initIndexedDB();
+        return loadFromFile(action);
     }
 }
 
