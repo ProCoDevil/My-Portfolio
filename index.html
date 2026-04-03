@@ -5,18 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PassSafe | Secure Vault</title>
     
-<!-- Strict CSP reverted to purely local -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com; font-src https://api.fontshare.com; img-src 'self' data:; manifest-src 'self' data:;">
 
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
     
-    <!-- Inline PWA Manifest -->
     <link rel="manifest" id="manifest-link">
 
     <style>
         /* SLEEK GAMIFIED ENGINE */
         :root[data-theme="dark"] {
-            /* Dark Color Palette from Image */
             --bg-base: #5A677D;      
             --bg-surface: #2B323D;   
             --bg-input: #6B778D;     
@@ -33,7 +30,6 @@
         }
 
         :root[data-theme="light"] {
-            /* Custom Light Palette - Gamified */
             --bg-base: #CBD5E1;      
             --bg-surface: #F8FAFC;   
             --bg-input: #E2E8F0;     
@@ -50,7 +46,6 @@
         }
         
         :root {
-            /* Shared Core Styling Variables */
             --border-width: 3px;
             --border-radius-lg: 24px;
             --border-radius-md: 16px;
@@ -59,7 +54,6 @@
             --shadow-sm: 4px;
         }
 
-        /* Force theme aesthetics */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -70,7 +64,6 @@
 
         body {
             background-color: var(--bg-base);
-            /* Subtle floating cloud/block illusion using radial gradients */
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 20%),
                 radial-gradient(circle at 80% 80%, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 20%);
@@ -87,13 +80,11 @@
             color: var(--heading-text); 
             font-weight: 900; 
             letter-spacing: -0.5px; 
-            /* Text outline for headings to pop */
             text-shadow: -1px -1px 0 var(--border-color), 1px -1px 0 var(--border-color), -1px 1px 0 var(--border-color), 1px 1px 0 var(--border-color), 0 3px 0 var(--border-color);
         }
 
-        h3#auth-title, h2#entry-form-title { text-shadow: none; color: var(--text-primary); } /* Keep subheadings cleaner */
+        h3#auth-title, h2#entry-form-title { text-shadow: none; color: var(--text-primary); }
 
-        /* Layout */
         #app {
             width: 100%;
             max-width: 800px;
@@ -121,12 +112,10 @@
             z-index: -1;
         }
 
-        /* Yaha par hum invisible elements ko flow se completely hata rahe hain */
         .hidden:not(.screen) {
             display: none !important;
         }
 
-        /* Banner */
         #fallback-banner {
             position: fixed;
             top: 0;
@@ -143,7 +132,6 @@
             z-index: 5000;
         }
 
-        /* Auth Screen */
         .auth-container {
             margin: auto;
             width: 100%;
@@ -168,7 +156,6 @@
             50% { transform: translateY(-10px); }
         }
         
-        /* Gamified Trust Badges */
         .auth-features {
             display: flex;
             justify-content: center;
@@ -200,7 +187,6 @@
             background: var(--bg-hover);
         }
 
-        /* Form Elements */
         input, select, textarea {
             width: 100%;
             padding: 16px 20px;
@@ -222,22 +208,19 @@
             box-shadow: 0 4px 0 var(--border-color);
         }
 
-        /* Custom Select Styling for Overlap Fix & Gamified Dropdown */
         select {
-            appearance: none; /* Native arrow hata diya */
+            appearance: none;
             -webkit-appearance: none;
-            /* Custom SVG Arrow */
             background-image: url("data:image/svg+xml;utf8,<svg fill='%239CA3AF' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
             background-repeat: no-repeat;
             background-position: right 16px center;
-            padding-right: 48px; /* Arrow ke liye space chhod diya */
+            padding-right: 48px;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
             cursor: pointer;
         }
 
-        /* Style options when combo box is open */
         select option {
             background-color: var(--bg-surface);
             color: var(--text-primary);
@@ -245,7 +228,6 @@
             padding: 12px;
         }
 
-        /* 3D Gamified Buttons */
         button {
             border: var(--border-width) solid var(--border-color);
             padding: 16px 24px;
@@ -258,17 +240,15 @@
             justify-content: center;
             gap: 10px;
             transition: transform 0.1s, box-shadow 0.1s;
-            /* Glossy top edge highlight */
             background-image: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 35%);
             color: #FFFFFF;
-            /* Black outline for text */
             text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 2px 0px #000;
         }
 
         button:active {
             transform: translateY(var(--shadow-depth));
             box-shadow: 0 0px 0 var(--border-color) !important;
-            background-image: none; /* Remove gloss on press */
+            background-image: none; 
         }
 
         button.primary {
@@ -281,7 +261,6 @@
             box-shadow: 0 var(--shadow-depth) 0 var(--border-color);
         }
 
-        /* Dashboard */
         header {
             display: flex;
             justify-content: space-between;
@@ -313,7 +292,6 @@
         
         .filter-sort-row select { margin: 0; flex: 1; }
 
-        /* CHANGED: List is now a CSS Grid for Card View */
         .entry-list {
             flex: 1;
             overflow-y: auto;
@@ -327,7 +305,6 @@
             padding-right: 4px;
         }
 
-        /* 3D Entry Cards (Updated for Grid Layout) */
         .entry-card {
             background: var(--bg-input);
             padding: 20px;
@@ -377,7 +354,7 @@
 
         .entry-info {
             flex: 1;
-            min-width: 0; /* Important for text truncation in flexbox */
+            min-width: 0;
         }
         
         .entry-info h3 { 
@@ -438,39 +415,21 @@
         }
         .icon-svg { width: 22px; height: 22px; fill: currentColor; filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.5)); }
 
-        /* Specific Hover Effects for Icon Buttons */
-        .icon-btn-primary-hover:hover {
-            background-color: var(--color-primary);
-            color: #fff;
-        }
-        
-        .icon-btn-warning-hover:hover {
-            background-color: var(--color-warning);
-            color: #000; /* Darker text for readability on yellow */
-        }
-        
-        .icon-btn-secondary-hover:hover {
-            background-color: var(--color-secondary);
-            color: #fff;
-        }
+        .icon-btn-primary-hover:hover { background-color: var(--color-primary); color: #fff; }
+        .icon-btn-warning-hover:hover { background-color: var(--color-warning); color: #000; }
+        .icon-btn-secondary-hover:hover { background-color: var(--color-secondary); color: #fff; }
+        .icon-btn-danger:hover { background-color: var(--color-danger); color: #fff; }
 
-        .icon-btn-danger:hover {
-            background-color: var(--color-danger);
-            color: #fff;
-        }
-
-        /* Smaller icon buttons for inline forms */
         .icon-btn-sm {
             padding: 8px;
             border-radius: 10px;
-            flex-shrink: 0; /* Prevents input from squishing them */
+            flex-shrink: 0;
         }
         .icon-btn-sm .icon-svg {
             width: 18px;
             height: 18px;
         }
 
-        /* Password Strength */
         .strength-meter {
             height: 14px;
             width: 100%;
@@ -490,7 +449,6 @@
             background-image: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
         }
 
-        /* Toast */
         #toast-container {
             position: fixed;
             bottom: 30px;
@@ -546,7 +504,6 @@
             text-shadow: 1px 1px 0 #000;
         }
 
-        /* Responsive tweaks */
         @media (min-width: 600px) {
             .controls-row {
                 flex-direction: row;
@@ -571,47 +528,29 @@
         <div class="auth-container">
             <div class="auth-icon">
                 <svg width="140" height="140" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Shackle -->
                     <path d="M 30 40 V 25 C 30 10 70 10 70 25 V 40" stroke="#0A0F14" stroke-width="10" stroke-linecap="round"/>
                     <path d="M 30 40 V 25 C 30 10 70 10 70 25 V 40" stroke="#8F9BA8" stroke-width="4" stroke-linecap="round"/>
-                    
-                    <!-- Body Shadow -->
                     <rect x="15" y="40" width="70" height="50" rx="12" fill="#0A0F14"/>
-                    
-                    <!-- Main Body -->
                     <rect x="15" y="36" width="70" height="50" rx="12" fill="#38C7A5" stroke="#0A0F14" stroke-width="4"/>
-                    
-                    <!-- Gloss -->
                     <path d="M 19 48 C 19 40 24 38 32 38 H 68 C 76 38 81 40 81 48 V 52 C 81 44 76 42 68 42 H 32 C 24 42 19 44 19 52 Z" fill="#ffffff" opacity="0.4"/>
-                    
-                    <!-- Screen Face -->
                     <rect x="25" y="50" width="50" height="26" rx="8" fill="#0A0F14"/>
                     <rect x="25" y="48" width="50" height="26" rx="8" fill="#2B323D" stroke="#0A0F14" stroke-width="2"/>
-                    
-                    <!-- Eyes -->
                     <path d="M 35 60 Q 40 55 45 60" stroke="#38C7A5" stroke-width="3" stroke-linecap="round" fill="none"/>
                     <path d="M 55 60 Q 60 55 65 60" stroke="#38C7A5" stroke-width="3" stroke-linecap="round" fill="none"/>
-                    
-                    <!-- Blushes -->
                     <circle cx="32" cy="65" r="3" fill="#FF4B4B"/>
                     <circle cx="68" cy="65" r="3" fill="#FF4B4B"/>
-                    
-                    <!-- Floating Hands -->
                     <circle cx="10" cy="70" r="5" fill="#38C7A5" stroke="#0A0F14" stroke-width="3"/>
                     <circle cx="90" cy="60" r="5" fill="#38C7A5" stroke="#0A0F14" stroke-width="3"/>
-                    
-                    <!-- Sparkle -->
                     <path d="M 85 20 Q 90 20 90 15 Q 90 20 95 20 Q 90 20 90 25 Q 90 20 85 20 Z" fill="#FFC800" stroke="#0A0F14" stroke-width="2"/>
                 </svg>
             </div>
             <h1 style="margin-bottom: 8px;">PassSafe</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">local password vault.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">Local password vault.</p>
             
             <div id="auth-initial">
                 <button class="primary" style="width: 100%; margin-bottom: 16px;" onclick="handleCreateVault()">Create New Vault</button>
                 <button class="primary" style="width: 100%;" onclick="handleOpenVault()">Open Existing Vault</button>
                 
-                <!-- Gamified Badges -->
                 <div class="auth-features">
                     <div class="feature-badge">📴 Offline</div>
                     <div class="feature-badge">🛡️ AES-256</div>
@@ -717,9 +656,7 @@
             <input type="url" id="entry-url" placeholder="https://...">
 
             <label>Category</label>
-            <select id="entry-category">
-                <!-- Dropdown will be populated dynamically via JS -->
-            </select>
+            <select id="entry-category"></select>
 
             <label>Notes</label>
             <textarea id="entry-notes" rows="3"></textarea>
@@ -797,40 +734,24 @@
 <div id="toast-container"></div>
 
 <script>
-/**
- * PassSafe Core Logic
- * Author: Built for Dhaval.
- * Architecture: Zero-trust, pure local storage, strict CSP.
- */
-
-/* ==========================================================================
-   STATE MANAGEMENT
-   ========================================================================== */
 const state = {
     masterKey: null,
     entries: [],
-    categories: [], // Dynamic Categories Array
+    categories: [],
     unsaved: false,
     fileHandle: null,
     fallbackMode: false,
     lockTimer: null,
-    vaultSalt: null, // Stored to verify master pw change
+    vaultSalt: null,
     db: null
 };
 
-// Auto-lock parameters
-const LOCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+const LOCK_TIMEOUT_MS = 5 * 60 * 1000;
 
-/* ==========================================================================
-   DOM UTILS
-   ========================================================================== */
 const $ = id => document.getElementById(id);
 const show = id => { $(id).classList.remove('hidden'); $(id).style.pointerEvents = 'auto'; };
 const hide = id => { $(id).classList.add('hidden'); $(id).style.pointerEvents = 'none'; };
 
-/* ==========================================================================
-   CUSTOM MODAL LOGIC (Bypasses iframe security restrictions)
-   ========================================================================== */
 let modalCallback = null;
 
 function showModal(options) {
@@ -841,7 +762,7 @@ function showModal(options) {
         $('modal-input').classList.remove('hidden');
         $('modal-input').style.pointerEvents = 'auto';
         $('modal-input').value = options.defaultValue || '';
-        setTimeout(() => $('modal-input').focus(), 50); // Focus after un-hiding
+        setTimeout(() => $('modal-input').focus(), 50);
     } else {
         $('modal-input').classList.add('hidden');
         $('modal-input').style.pointerEvents = 'none';
@@ -849,7 +770,6 @@ function showModal(options) {
     
     $('modal-confirm-btn').textContent = options.confirmText || 'Confirm';
     
-    // Style the confirm button based on action type
     if(options.danger) {
         $('modal-confirm-btn').style.backgroundColor = 'var(--color-danger)';
     } else {
@@ -911,9 +831,6 @@ function setUnsaved(status) {
     }
 }
 
-/* ==========================================================================
-   CRYPTO ENGINE
-   ========================================================================== */
 const CRYPTO_ITERATIONS = 310000;
 const CRYPTO_ALGO = 'AES-GCM';
 
@@ -969,17 +886,14 @@ async function decryptVault(ivB64, ciphertextB64, key) {
     }
 }
 
-/* ==========================================================================
-   FILE I/O & FALLBACK (Mobile-safe version)
-   ========================================================================== */
+// ==========================================================================
+// FILE I/O & FALLBACK (WITH AGGRESSIVE MOBILE ERROR CATCHING)
+// ==========================================================================
 async function initStorage() {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isIframe = window !== window.parent;
-    
-    if (!window.showOpenFilePicker || isMobile || isIframe) {
+    if (!window.showOpenFilePicker) {
         state.fallbackMode = true;
         $('fallback-banner').style.display = 'block';
-        $('fallback-banner').textContent = isMobile ? 'Mobile detected. Using secure local storage.' : 'Browser restricted. Using secure local fallback storage.';
+        $('fallback-banner').textContent = 'Browser restricted. Using secure local fallback storage.';
         initIndexedDB();
     }
 }
@@ -1019,14 +933,21 @@ async function saveToFile(vaultJSON) {
         setUnsaved(false);
         showToast('Vault saved securely.');
     } catch (e) {
+        // Only ignore if the user explicitly clicked "Cancel" in the file picker
         if (e.name === 'AbortError') return;
-        console.warn("File System API restricted or failed. Falling back to IndexedDB.", e);
+
+        // Catch ALL other errors (like NotAllowedError on Android Chrome)
+        console.warn("File System API failed or restricted. Shifting to IndexedDB.", e);
+        
         state.fallbackMode = true;
         $('fallback-banner').style.display = 'block';
-        $('fallback-banner').textContent = 'File API restricted. Using secure local fallback storage.';
+        $('fallback-banner').textContent = 'Device file access restricted. Using secure local storage.';
         
-        if (!state.db) initIndexedDB();
+        if (!state.db) {
+            initIndexedDB();
+        }
         
+        // Wait for DB to be ready, then save
         const checkDB = () => {
             if (state.db) saveToFile(vaultJSON);
             else setTimeout(checkDB, 50);
@@ -1063,18 +984,17 @@ async function loadFromFile(action) {
         return JSON.parse(text);
     } catch (e) {
         if (e.name === 'AbortError') return null;
-        console.warn("File System API restricted. Falling back to IndexedDB.", e);
+
+        console.warn("File System API failed or restricted. Shifting to IndexedDB.", e);
         state.fallbackMode = true;
         $('fallback-banner').style.display = 'block';
-        $('fallback-banner').textContent = 'File API restricted. Using secure local fallback storage.';
+        $('fallback-banner').textContent = 'Device file access restricted. Using secure local storage.';
+        
         if (!state.db) initIndexedDB();
         return loadFromFile(action);
     }
 }
 
-/* ==========================================================================
-   AUTH LOGIC
-   ========================================================================== */
 let authAction = null;
 
 function handleCreateVault() {
@@ -1110,7 +1030,7 @@ async function processAuth() {
             state.vaultSalt = crypto.getRandomValues(new Uint8Array(16));
             state.masterKey = await deriveKey(pw, state.vaultSalt);
             state.entries = [];
-            state.categories = ['Social', 'Work', 'Finance', 'Email', 'Other']; // Default Set
+            state.categories = ['Social', 'Work', 'Finance', 'Email', 'Other'];
             
             const payload = { entries: state.entries, categories: state.categories };
             const enc = await encryptVault(payload, state.masterKey);
@@ -1132,7 +1052,6 @@ async function processAuth() {
             
             let decrypted = await decryptVault(vaultData.iv, vaultData.ciphertext, state.masterKey);
             
-            // Auto-Migration for older v1 arrays to objects
             if (Array.isArray(decrypted)) {
                 state.entries = decrypted;
                 state.categories = ['Social', 'Work', 'Finance', 'Email', 'Other'];
@@ -1180,12 +1099,10 @@ function lockVault() {
     document.removeEventListener('keydown', resetLockTimer);
 }
 
-/* ==========================================================================
-   AUTO-LOCK TIMERS
-   ========================================================================== */
 function setupActivityListeners() {
     document.addEventListener('mousemove', resetLockTimer);
     document.addEventListener('keydown', resetLockTimer);
+    document.addEventListener('touchstart', resetLockTimer); // Added touch for mobile
     resetLockTimer();
 }
 
@@ -1200,9 +1117,6 @@ function resetLockTimer() {
     }, LOCK_TIMEOUT_MS);
 }
 
-/* ==========================================================================
-   VAULT UI LOGIC (UPDATED FOR GRID LAYOUT)
-   ========================================================================== */
 function renderEntries() {
     const list = $('entry-list');
     list.textContent = '';
@@ -1235,12 +1149,9 @@ function renderEntries() {
         const card = el('div', { className: 'entry-card' });
         card.onclick = (e) => { if(!e.target.closest('button')) editEntry(entry.id); };
 
-        // CARD HEADER: Avatar + Title + Username
         const header = el('div', { className: 'card-header' });
         
-        // Generate a dynamic avatar based on the first letter of the title
         const firstLetter = (entry.title || 'U').charAt(0).toUpperCase();
-        // Cycle through a set of gamified colors for avatars
         const colors = ['var(--color-primary)', 'var(--color-danger)', 'var(--color-warning)', 'var(--color-secondary)'];
         const colorIndex = firstLetter.charCodeAt(0) % colors.length;
         const avatar = el('div', { className: 'card-avatar', style: `background-color: ${colors[colorIndex]};` }, firstLetter);
@@ -1255,10 +1166,7 @@ function renderEntries() {
         header.appendChild(avatar);
         header.appendChild(info);
 
-        // CARD ACTIONS: Separated by dashed line
         const actions = el('div', { className: 'entry-actions' });
-        
-        // Use a div to push the right side buttons if needed, but flex justify-content handles it well.
         const leftActions = el('div', { style: 'display: flex; gap: 8px;' });
         const rightActions = el('div', { style: 'display: flex; gap: 8px;' });
 
@@ -1365,10 +1273,7 @@ async function saveEntry() {
     renderEntries();
 }
 
-// Updated delete function to handle direct ID passing from the dashboard card
 function deleteEntry(passedId) {
-    // If called from the dashboard, passedId is the string.
-    // If called from the form button, passedId might be the mouse click event, so we use the hidden input.
     const id = typeof passedId === 'string' ? passedId : $('entry-id').value;
     
     if (!id) return;
@@ -1383,7 +1288,7 @@ function deleteEntry(passedId) {
             state.entries = state.entries.filter(e => e.id !== id);
             setUnsaved(true);
             persistVault();
-            hideEntryForm(); // Ensure form hides if we were inside it
+            hideEntryForm();
             renderEntries();
         }
     });
@@ -1401,9 +1306,6 @@ async function persistVault() {
     }
 }
 
-/* ==========================================================================
-   CATEGORY MANAGEMENT LOGIC
-   ========================================================================== */
 function updateCategoryDropdowns() {
     const filterSel = $('filter-category');
     const entrySel = $('entry-category');
@@ -1467,7 +1369,6 @@ async function addCategory() {
     const name = input.value.trim();
     if (!name) return showToast('Category name required.');
     
-    // Case insensitive duplicate check
     if (state.categories.some(c => c.toLowerCase() === name.toLowerCase())) {
         return showToast('Category already exists.');
     }
@@ -1499,7 +1400,6 @@ function editCategory(index) {
 
             state.categories[index] = finalName;
             
-            // Update all entries using this category
             state.entries.forEach(e => {
                 if (e.category === oldName) e.category = finalName;
             });
@@ -1508,7 +1408,7 @@ function editCategory(index) {
             await persistVault();
             updateCategoryDropdowns();
             renderCategoryList();
-            renderEntries(); // Updates dashboard UI silently
+            renderEntries(); 
         }
     });
 }
@@ -1517,7 +1417,6 @@ function deleteCategory(index) {
     const catName = state.categories[index];
     if (state.categories.length <= 1) return showToast('Cannot delete the last category.');
     
-    // Warn user that existing entries will be reassigned (Bug Fixed here)
     const fallback = state.categories === catName ? state.categories : state.categories;
     
     showModal({
@@ -1529,7 +1428,6 @@ function deleteCategory(index) {
         onConfirm: async () => {
             state.categories.splice(index, 1);
             
-            // Reassign orphaned entries to fallback
             state.entries.forEach(e => {
                 if (e.category === catName) e.category = fallback;
             });
@@ -1543,9 +1441,6 @@ function deleteCategory(index) {
     });
 }
 
-/* ==========================================================================
-   UTILITIES & SETTINGS
-   ========================================================================== */
 function toggleTheme() {
     const html = document.documentElement;
     html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -1564,7 +1459,7 @@ function generatePassword() {
         pw += chars[randomVals[i] % chars.length];
     }
     $('entry-password').value = pw;
-    togglePasswordVisibility('entry-password'); // show it
+    togglePasswordVisibility('entry-password'); 
     updateStrength();
 }
 
@@ -1590,7 +1485,7 @@ async function copyToClipboard(text) {
         await navigator.clipboard.writeText(text);
         showToast('Copied to clipboard');
         setTimeout(async () => {
-            try { await navigator.clipboard.writeText(''); } catch(e){} // Auto-clear
+            try { await navigator.clipboard.writeText(''); } catch(e){} 
         }, 30000);
     } catch (e) {
         showToast('Clipboard API not available.');
@@ -1654,7 +1549,6 @@ function importVault(e) {
                 if (idx > -1) state.entries[idx] = imp;
                 else state.entries.push(imp);
                 
-                // Dynamically absorb missing categories from imported JSON
                 if (imp.category && !state.categories.includes(imp.category)) {
                     state.categories.push(imp.category);
                 }
@@ -1673,9 +1567,6 @@ function importVault(e) {
     reader.readAsText(file);
 }
 
-/* ==========================================================================
-   PWA & GUARDRAILS
-   ========================================================================== */
 window.addEventListener('beforeunload', (e) => {
     if (state.unsaved) {
         e.preventDefault();
@@ -1683,7 +1574,6 @@ window.addEventListener('beforeunload', (e) => {
     }
 });
 
-// Inline Manifest setup
 const manifestJSON = {
     name: "PassSafe",
     short_name: "PassSafe",
@@ -1699,7 +1589,6 @@ const manifestJSON = {
 };
 $('manifest-link').href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestJSON));
 
-// Boot
 window.onload = () => {
     initStorage();
     if ('serviceWorker' in navigator) {
