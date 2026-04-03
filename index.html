@@ -1,70 +1,1714 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Site</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="Images/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PassSafe | Secure Vault</title>
+    
+<!-- Strict CSP reverted to purely local -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com; font-src https://api.fontshare.com; img-src 'self' data:; manifest-src 'self' data:;">
+
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+    
+    <!-- Inline PWA Manifest -->
+    <link rel="manifest" id="manifest-link">
+
+    <style>
+        /* SLEEK GAMIFIED ENGINE */
+        :root[data-theme="dark"] {
+            /* Dark Color Palette from Image */
+            --bg-base: #5A677D;      
+            --bg-surface: #2B323D;   
+            --bg-input: #6B778D;     
+            --bg-hover: #79869C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --heading-text: #FFFFFF;
+            --color-primary: #38C7A5; 
+            --color-secondary: #8F9BA8; 
+            --color-danger: #FF4B4B;
+            --color-warning: #FFC800;
+            --color-success: #38C7A5;
+            --border-color: #0A0F14; 
+        }
+
+        :root[data-theme="light"] {
+            /* Custom Light Palette - Gamified */
+            --bg-base: #CBD5E1;      
+            --bg-surface: #F8FAFC;   
+            --bg-input: #E2E8F0;     
+            --bg-hover: #94A3B8;
+            --text-primary: #0F172A; 
+            --text-secondary: #475569;
+            --heading-text: #FFFFFF;
+            --color-primary: #10B981; 
+            --color-secondary: #94A3B8; 
+            --color-danger: #EF4444;
+            --color-warning: #F59E0B;
+            --color-success: #10B981;
+            --border-color: #0F172A; 
+        }
+        
+        :root {
+            /* Shared Core Styling Variables */
+            --border-width: 3px;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --border-radius-pill: 99px;
+            --shadow-depth: 6px;
+            --shadow-sm: 4px;
+        }
+
+        /* Force theme aesthetics */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Satoshi', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            /* Subtle floating cloud/block illusion using radial gradients */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 20%),
+                radial-gradient(circle at 80% 80%, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 20%);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; font-weight: bold; }
+
+        h1, h2, h3 { 
+            color: var(--heading-text); 
+            font-weight: 900; 
+            letter-spacing: -0.5px; 
+            /* Text outline for headings to pop */
+            text-shadow: -1px -1px 0 var(--border-color), 1px -1px 0 var(--border-color), -1px 1px 0 var(--border-color), 1px 1px 0 var(--border-color), 0 3px 0 var(--border-color);
+        }
+
+        h3#auth-title, h2#entry-form-title { text-shadow: none; color: var(--text-primary); } /* Keep subheadings cleaner */
+
+        /* Layout */
+        #app {
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 20px 40px 20px;
+            opacity: 1;
+            transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow-y: auto;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            z-index: -1;
+        }
+
+        /* Yaha par hum invisible elements ko flow se completely hata rahe hain */
+        .hidden:not(.screen) {
+            display: none !important;
+        }
+
+        /* Banner */
+        #fallback-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--color-warning);
+            color: #000;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 900;
+            display: none;
+            border-bottom: var(--border-width) solid var(--border-color);
+            z-index: 5000;
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            margin: auto;
+            width: 100%;
+            max-width: 380px;
+            background: var(--bg-surface);
+            padding: 40px 30px;
+            border-radius: var(--border-radius-lg);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 0 10px 0 var(--border-color);
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-icon {
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Gamified Trust Badges */
+        .auth-features {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .feature-badge {
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 0 var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: default;
+            transition: transform 0.2s;
+        }
+        
+        .feature-badge:hover {
+            transform: translateY(-2px);
+            background: var(--bg-hover);
+        }
+
+        /* Form Elements */
+        input, select, textarea {
+            width: 100%;
+            padding: 16px 20px;
+            margin: 10px 0 20px 0;
+            background: var(--bg-input);
+            border: var(--border-width) solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--border-radius-md);
+            outline: none;
+            font-weight: 700;
+            transition: transform 0.2s;
+            box-shadow: inset 0 3px 0 rgba(0,0,0,0.1);
+        }
+        
+        input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+
+        input:focus, select:focus, textarea:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 var(--border-color);
+        }
+
+        /* Custom Select Styling for Overlap Fix & Gamified Dropdown */
+        select {
+            appearance: none; /* Native arrow hata diya */
+            -webkit-appearance: none;
+            /* Custom SVG Arrow */
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%239CA3AF' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 48px; /* Arrow ke liye space chhod diya */
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* Style options when combo box is open */
+        select option {
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            font-weight: 700;
+            padding: 12px;
+        }
+
+        /* 3D Gamified Buttons */
+        button {
+            border: var(--border-width) solid var(--border-color);
+            padding: 16px 24px;
+            border-radius: var(--border-radius-pill);
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s, box-shadow 0.1s;
+            /* Glossy top edge highlight */
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 35%);
+            color: #FFFFFF;
+            /* Black outline for text */
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 2px 0px #000;
+        }
+
+        button:active {
+            transform: translateY(var(--shadow-depth));
+            box-shadow: 0 0px 0 var(--border-color) !important;
+            background-image: none; /* Remove gloss on press */
+        }
+
+        button.primary {
+            background-color: var(--color-primary);
+            box-shadow: 0 var(--shadow-depth) 0 var(--border-color);
+        }
+
+        button.secondary {
+            background-color: var(--color-secondary);
+            box-shadow: 0 var(--shadow-depth) 0 var(--border-color);
+        }
+
+        /* Dashboard */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            margin-bottom: 20px;
+        }
+
+        header h2 { font-size: 32px; margin-bottom: 4px; }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .controls-row {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .controls-row input { margin: 0; }
+        
+        .filter-sort-row {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .filter-sort-row select { margin: 0; flex: 1; }
+
+        /* CHANGED: List is now a CSS Grid for Card View */
+        .entry-list {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            align-content: start;
+            gap: 16px;
+            padding-bottom: 40px;
+            padding-top: 4px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        /* 3D Entry Cards (Updated for Grid Layout) */
+        .entry-card {
+            background: var(--bg-input);
+            padding: 20px;
+            border-radius: var(--border-radius-lg);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 0 var(--shadow-sm) 0 var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s, background-color 0.2s;
+        }
+
+        .entry-card:hover {
+            background-color: var(--bg-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 var(--shadow-depth) 0 var(--border-color);
+        }
+
+        .entry-card:active {
+            transform: translateY(var(--shadow-sm));
+            box-shadow: 0 0px 0 var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .card-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 20px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            flex-shrink: 0;
+            box-shadow: 0 2px 0 var(--border-color);
+        }
+
+        .entry-info {
+            flex: 1;
+            min-width: 0; /* Important for text truncation in flexbox */
+        }
+        
+        .entry-info h3 { 
+            margin-bottom: 2px; 
+            font-size: 18px; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px;
+            text-shadow: none; 
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .entry-info p { 
+            color: var(--text-secondary); 
+            font-size: 13px; 
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .entry-actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: auto;
+            border-top: 2px dashed rgba(0, 0, 0, 0.15);
+            padding-top: 16px;
+        }
+
+        :root[data-theme="dark"] .entry-actions {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-btn {
+            background: var(--bg-surface);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 0 3px 0 var(--border-color);
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%);
+            text-shadow: none;
+            transition: background-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.1s;
+        }
+        
+        .icon-btn:active { 
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 var(--border-color) !important;
+            background-image: none;
+        }
+        .icon-svg { width: 22px; height: 22px; fill: currentColor; filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.5)); }
+
+        /* Specific Hover Effects for Icon Buttons */
+        .icon-btn-primary-hover:hover {
+            background-color: var(--color-primary);
+            color: #fff;
+        }
+        
+        .icon-btn-warning-hover:hover {
+            background-color: var(--color-warning);
+            color: #000; /* Darker text for readability on yellow */
+        }
+        
+        .icon-btn-secondary-hover:hover {
+            background-color: var(--color-secondary);
+            color: #fff;
+        }
+
+        .icon-btn-danger:hover {
+            background-color: var(--color-danger);
+            color: #fff;
+        }
+
+        /* Smaller icon buttons for inline forms */
+        .icon-btn-sm {
+            padding: 8px;
+            border-radius: 10px;
+            flex-shrink: 0; /* Prevents input from squishing them */
+        }
+        .icon-btn-sm .icon-svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Password Strength */
+        .strength-meter {
+            height: 14px;
+            width: 100%;
+            background: var(--bg-surface);
+            border: var(--border-width) solid var(--border-color);
+            border-radius: 8px;
+            margin-top: -10px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 0 rgba(0,0,0,0.3);
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-right: var(--border-width) solid var(--border-color);
+            transition: width 0.3s, background-color 0.3s;
+            background-image: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .toast {
+            background: var(--color-primary);
+            color: #FFFFFF;
+            padding: 14px 24px;
+            border-radius: var(--border-radius-pill);
+            border: var(--border-width) solid var(--border-color);
+            font-size: 15px;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 var(--shadow-sm) 0 var(--border-color);
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            animation: bounceUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes bounceUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: var(--border-radius-pill);
+            background: var(--color-primary);
+            color: #FFF;
+            font-weight: 900;
+            display: inline-block;
+            border: 2px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 0 var(--border-color);
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        label {
+            font-weight: 900;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-left: 4px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* Responsive tweaks */
+        @media (min-width: 600px) {
+            .controls-row {
+                flex-direction: row;
+                flex-wrap: nowrap; /* Sab kuch ek hi line mein rahega */
+                align-items: center;
+                gap: 12px;
+            }
+            .controls-row input { flex: 2; min-width: 150px; }
+            .filter-sort-row { flex: 2; gap: 12px; }
+            /* min-width: 0 lagana zaroori hai flexbox mein text truncate karne ke liye */
+            .filter-sort-row select { flex: 1; min-width: 0; } 
+            /* Button ab sirf utni jagah lega jitni zaroorat hai */
+            .controls-row .primary { flex: 0 0 auto; width: auto !important; padding: 16px 24px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="head-container">
-    <img src="Images/cloud.png" class="first" alt="cloud-img">
-     <h1>I'm Dhaval...</h1>
-     <h2>a Programmer.</h2>
-     <img src="Images/cloud.png"  class="second" alt="cloud-img">
-     <img src="Images/mountain.png" alt="mountain.img">
+
+<div id="fallback-banner">Browser File API not supported. Using secure local fallback storage.</div>
+
+<div id="app">
+    <!-- Auth Screen -->
+    <div id="screen-auth" class="screen">
+        <div class="auth-container">
+            <div class="auth-icon">
+                <svg width="140" height="140" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Shackle -->
+                    <path d="M 30 40 V 25 C 30 10 70 10 70 25 V 40" stroke="#0A0F14" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M 30 40 V 25 C 30 10 70 10 70 25 V 40" stroke="#8F9BA8" stroke-width="4" stroke-linecap="round"/>
+                    
+                    <!-- Body Shadow -->
+                    <rect x="15" y="40" width="70" height="50" rx="12" fill="#0A0F14"/>
+                    
+                    <!-- Main Body -->
+                    <rect x="15" y="36" width="70" height="50" rx="12" fill="#38C7A5" stroke="#0A0F14" stroke-width="4"/>
+                    
+                    <!-- Gloss -->
+                    <path d="M 19 48 C 19 40 24 38 32 38 H 68 C 76 38 81 40 81 48 V 52 C 81 44 76 42 68 42 H 32 C 24 42 19 44 19 52 Z" fill="#ffffff" opacity="0.4"/>
+                    
+                    <!-- Screen Face -->
+                    <rect x="25" y="50" width="50" height="26" rx="8" fill="#0A0F14"/>
+                    <rect x="25" y="48" width="50" height="26" rx="8" fill="#2B323D" stroke="#0A0F14" stroke-width="2"/>
+                    
+                    <!-- Eyes -->
+                    <path d="M 35 60 Q 40 55 45 60" stroke="#38C7A5" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <path d="M 55 60 Q 60 55 65 60" stroke="#38C7A5" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    
+                    <!-- Blushes -->
+                    <circle cx="32" cy="65" r="3" fill="#FF4B4B"/>
+                    <circle cx="68" cy="65" r="3" fill="#FF4B4B"/>
+                    
+                    <!-- Floating Hands -->
+                    <circle cx="10" cy="70" r="5" fill="#38C7A5" stroke="#0A0F14" stroke-width="3"/>
+                    <circle cx="90" cy="60" r="5" fill="#38C7A5" stroke="#0A0F14" stroke-width="3"/>
+                    
+                    <!-- Sparkle -->
+                    <path d="M 85 20 Q 90 20 90 15 Q 90 20 95 20 Q 90 20 90 25 Q 90 20 85 20 Z" fill="#FFC800" stroke="#0A0F14" stroke-width="2"/>
+                </svg>
+            </div>
+            <h1 style="margin-bottom: 8px;">PassSafe</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">Military-grade local password vault.</p>
+            
+            <div id="auth-initial">
+                <button class="primary" style="width: 100%; margin-bottom: 16px;" onclick="handleCreateVault()">Create New Vault</button>
+                <button class="primary" style="width: 100%;" onclick="handleOpenVault()">Open Existing Vault</button>
+                
+                <!-- New Gamified Badges utilizing the empty space -->
+                <div class="auth-features">
+                    <div class="feature-badge">📴 Offline</div>
+                    <div class="feature-badge">🛡️ AES-256</div>
+                    <div class="feature-badge">💾 Local Data</div>
+                </div>
+                
+                <p style="margin-top: 24px; font-size: 13px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Your Keys. Your Vault.</p>
+            </div>
+
+            <div id="auth-unlock" class="hidden">
+                <h3 id="auth-title" style="margin-bottom: 24px;">Unlock Vault</h3>
+                <input type="password" id="master-password" placeholder="Master Password" class="mono">
+                <button class="secondary" style="width: 100%; margin-top: 8px;" id="btn-auth-action">Unlock</button>
+                <button style="width: 100%; margin-top: 16px; background: transparent; border: none; color: var(--text-secondary); box-shadow: none;" onclick="resetAuth()">Cancel</button>
+            </div>
+        </div>
     </div>
 
+    <!-- Dashboard Screen -->
+    <div id="screen-dashboard" class="screen hidden">
+        <header>
+            <div>
+                <h2>My Vault</h2>
+                <span id="vault-status" class="badge">Locked</span>
+            </div>
+            <div class="header-actions">
+                <!-- New Category Manager Button added here -->
+                <button onclick="openCategories()" class="icon-btn icon-btn-primary-hover" aria-label="Categories">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                </button>
+                <button onclick="toggleTheme()" class="icon-btn icon-btn-secondary-hover" aria-label="Toggle Theme">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9zm0-16.5c4.14 0 7.5 3.36 7.5 7.5s-3.36 7.5-7.5 7.5v-15z"/></svg>
+                </button>
+                <button onclick="openSettings()" class="icon-btn icon-btn-warning-hover" aria-label="Settings">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                </button>
+                <button onclick="lockVault()" class="icon-btn icon-btn-danger" aria-label="Lock">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                </button>
+            </div>
+        </header>
 
-    <div class="middle-container">
-        <div class="profile">
-          <img src="Images/fevicon.jpg" alt="">
-          <h2>Hello.</h2>
-          <p>I am Dhaval Gohel. I am currently exploring the coding world and learn new things every time.
-            I am improving my self day by day.
-          </p>
+        <div class="controls-row">
+            <input type="text" id="search-input" placeholder="Search title, user, url..." oninput="renderEntries()">
+            <div class="filter-sort-row">
+                <select id="filter-category" onchange="renderEntries()">
+                    <option value="All">All Categories</option>
+                    <option value="Social">Social</option>
+                    <option value="Work">Work</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Email">Email</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="sort-order" onchange="renderEntries()">
+                    <option value="name">Sort by Name</option>
+                    <option value="recent">Recently Updated</option>
+                </select>
+            </div>
+            <button class="primary" onclick="showEntryForm()">
+                <svg class="icon-svg" style="width: 20px; height: 20px;" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New
+            </button>
         </div>
-        <hr>
 
-
-        <div class="skills">
-          <h2>My Skills.</h2>
-          <div class="skill-row">
-            <img class="com" src="Images/computer.png" alt="">
-            <h3>Work</h3>
-            <p>I am currently a student in BCA stream.I just love to Code and Designing i am also familier of Core java concepts , databases , and Backend development</p>
-          </div>
-          <div class="skill-row">
-            <img src="Images/chillies.png" class="chillies" alt="">
-            <h3>Projects</h3>
-            <p>You can see my projects on Git hub . There are many projects to see and i regularly make a projects and programms of web development and java programming language.</p>
-          </div>
+        <div id="empty-state" class="hidden" style="text-align: center; margin-top: 60px; color: var(--text-secondary);">
+            <svg class="icon-svg" style="width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5;" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+            <h3>Vault is empty</h3>
+            <p style="font-weight: 600; margin-top: 8px;">Add your first password to secure it.</p>
         </div>
-        <hr>
 
+        <div id="entry-list" class="entry-list"></div>
+    </div>
 
-        <div class="contact-me">
-          <h2>Get In Touch</h2>
-          <h3>If you love hot wings as much as i love Me</h3>
-          <p>Stay connect with me to clicking down the CONTACT ME Button.
+    <!-- Entry Form Screen -->
+    <div id="screen-entry" class="screen hidden">
+        <header>
+            <h2 id="entry-form-title">Add Entry</h2>
+            <button class="icon-btn icon-btn-danger" onclick="hideEntryForm()">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+
+        <div style="flex: 1; overflow-y: auto;">
+            <input type="hidden" id="entry-id">
             
-          </p>
-          <a class="btn">CONTACT ME</a>
+            <label>Title</label>
+            <input type="text" id="entry-title" placeholder="e.g. Google">
+            
+            <label>Username / Email</label>
+            <input type="text" id="entry-username" placeholder="user@example.com">
+            
+            <label>Password</label>
+            <div style="display: flex; gap: 8px; align-items: center; margin: 10px 0 20px 0;">
+                <input type="password" id="entry-password" class="mono" style="margin: 0;" oninput="updateStrength()">
+                <button class="icon-btn icon-btn-sm icon-btn-secondary-hover" onclick="togglePasswordVisibility('entry-password')" type="button">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                </button>
+                <button class="icon-btn icon-btn-sm icon-btn-primary-hover" onclick="generatePassword()" type="button" title="Generate">
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.3 16.9c.4-.7.7-1.5.7-2.4 0-2.8-2.2-5-5-5s-5 2.2-5 5 2.2 5 5 5c.9 0 1.7-.3 2.4-.7l3.2 3.2 1.4-1.4-3.2-3.2zm-4.3.1c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zM7 12H5c0-3.9 3.1-7 7-7v2c-2.8 0-5 2.2-5 5zm5 7v-2c-2.8 0-5-2.2-5-5H5c0 3.9 3.1 7 7 7z"/></svg>
+                </button>
+            </div>
+            <div class="strength-meter"><div id="pw-strength-bar" class="strength-bar"></div></div>
+
+            <label>URL (optional)</label>
+            <input type="url" id="entry-url" placeholder="https://...">
+
+            <label>Category</label>
+            <select id="entry-category">
+                <!-- Dropdown will be populated dynamically via JS -->
+            </select>
+
+            <label>Notes</label>
+            <textarea id="entry-notes" rows="3"></textarea>
+
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 20px;">
+                <input type="checkbox" id="entry-favorite" style="width: auto; margin: 0;"> Mark as Favorite
+            </label>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="primary" style="flex: 1;" onclick="saveEntry()">Save Entry</button>
+                <button id="btn-delete-entry" style="background: var(--color-danger); color: var(--color-primary-text); display: none;" onclick="deleteEntry()">Delete</button>
+            </div>
         </div>
-      </div>
-      
-      
-      <div class="bottom-container">
-        <a class="footer-link" href="https://www.linkedin.com/">LinkedIn</a>
-        <a class="footer-link" href="https://twitter.com/">Twitter</a>
-        <a class="footer-link" href="https://github.com/ProCoDevil">Project</a>
-        <p>© Dhaval Gohel.</p>
-      </div>
-      
+    </div>
+
+    <!-- Category Manager Screen -->
+    <div id="screen-categories" class="screen hidden">
+        <header>
+            <h2>Categories</h2>
+            <button class="icon-btn icon-btn-danger" onclick="closeCategories()">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+
+        <div style="flex: 1; overflow-y: auto;">
+            <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+                <input type="text" id="new-category-name" placeholder="New Category Name" style="margin: 0;">
+                <button class="primary" onclick="addCategory()" style="padding: 14px 24px; white-space: nowrap;">Add</button>
+            </div>
+            
+            <label style="margin-bottom: 12px;">Manage Existing</label>
+            <div id="category-list" style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 30px;"></div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="screen-settings" class="screen hidden">
+        <header>
+            <h2>Settings</h2>
+            <button class="icon-btn icon-btn-danger" onclick="closeSettings()">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </header>
+
+        <div>
+            <h3>Change Master Password</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; font-weight: 600;">Re-encrypts the vault.</p>
+            <input type="password" id="new-master-password" placeholder="New Master Password" class="mono">
+            <button onclick="changeMasterPassword()" style="margin-bottom: 30px;">Update Password</button>
+
+            <h3>Data Management</h3>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="exportVault()">Export (JSON)</button>
+                <button onclick="document.getElementById('import-file').click()">Import (JSON)</button>
+                <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importVault(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Gamified Modal to replace blocked prompt/confirm alerts -->
+    <div id="custom-modal" class="screen hidden" style="background: rgba(10, 15, 20, 0.85); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
+        <div class="auth-container" style="width: 100%; max-width: 400px; padding: 30px;">
+            <h3 id="modal-title" style="margin-bottom: 16px; font-size: 22px;">Title</h3>
+            <p id="modal-message" style="margin-bottom: 24px; color: var(--text-secondary); font-weight: 600; line-height: 1.4;"></p>
+            <input type="text" id="modal-input" class="hidden" style="margin-bottom: 24px;">
+            <div style="display: flex; gap: 12px;">
+                <button class="secondary" style="flex: 1; padding: 12px;" onclick="closeModal()">Cancel</button>
+                <button id="modal-confirm-btn" class="primary" style="flex: 1; padding: 12px;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+/**
+ * PassSafe Core Logic
+ * Author: Built for Dhaval.
+ * Architecture: Zero-trust, pure local storage, strict CSP.
+ */
+
+/* ==========================================================================
+   STATE MANAGEMENT
+   ========================================================================== */
+const state = {
+    masterKey: null,
+    entries: [],
+    categories: [], // Dynamic Categories Array
+    unsaved: false,
+    fileHandle: null,
+    fallbackMode: false,
+    lockTimer: null,
+    vaultSalt: null, // Stored to verify master pw change
+    db: null
+};
+
+// Auto-lock parameters
+const LOCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+/* ==========================================================================
+   DOM UTILS
+   ========================================================================== */
+const $ = id => document.getElementById(id);
+const show = id => { $(id).classList.remove('hidden'); $(id).style.pointerEvents = 'auto'; };
+const hide = id => { $(id).classList.add('hidden'); $(id).style.pointerEvents = 'none'; };
+
+/* ==========================================================================
+   CUSTOM MODAL LOGIC (Bypasses iframe security restrictions)
+   ========================================================================== */
+let modalCallback = null;
+
+function showModal(options) {
+    $('modal-title').textContent = options.title;
+    $('modal-message').textContent = options.message || '';
+    
+    if (options.type === 'prompt') {
+        $('modal-input').classList.remove('hidden');
+        $('modal-input').style.pointerEvents = 'auto';
+        $('modal-input').value = options.defaultValue || '';
+        setTimeout(() => $('modal-input').focus(), 50); // Focus after un-hiding
+    } else {
+        $('modal-input').classList.add('hidden');
+        $('modal-input').style.pointerEvents = 'none';
+    }
+    
+    $('modal-confirm-btn').textContent = options.confirmText || 'Confirm';
+    
+    // Style the confirm button based on action type
+    if(options.danger) {
+        $('modal-confirm-btn').style.backgroundColor = 'var(--color-danger)';
+    } else {
+        $('modal-confirm-btn').style.backgroundColor = 'var(--color-primary)';
+    }
+    
+    modalCallback = options.onConfirm;
+    show('custom-modal');
+}
+
+function closeModal() {
+    hide('custom-modal');
+    modalCallback = null;
+}
+
+$('modal-confirm-btn').onclick = () => {
+    if (modalCallback) {
+        const val = $('modal-input').value;
+        modalCallback(val);
+    }
+    closeModal();
+};
+
+function el(tag, attrs = {}, text = '') {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+        if (k === 'className') e.className = v;
+        else e.setAttribute(k, v);
+    }
+    if (text) e.textContent = text;
+    return e;
+}
+
+function showToast(msg) {
+    const t = el('div', { className: 'toast' }, msg);
+    $('toast-container').appendChild(t);
+    setTimeout(() => {
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 400);
+    }, 3000);
+}
+
+function generateUUID() {
+    return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function setUnsaved(status) {
+    state.unsaved = status;
+    const badge = $('vault-status');
+    if (status) {
+        badge.textContent = 'Unsaved Changes';
+        badge.style.background = 'var(--color-warning)';
+    } else {
+        badge.textContent = 'Saved';
+        badge.style.background = 'var(--color-success)';
+    }
+}
+
+/* ==========================================================================
+   CRYPTO ENGINE
+   ========================================================================== */
+const CRYPTO_ITERATIONS = 310000;
+const CRYPTO_ALGO = 'AES-GCM';
+
+function buf2b64(buf) {
+    let binary = '';
+    const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+    return window.btoa(binary);
+}
+
+function b642buf(b64) {
+    const binary = window.atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
+}
+
+async function deriveKey(password, salt) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: salt, iterations: CRYPTO_ITERATIONS, hash: "SHA-256" },
+        keyMaterial,
+        { name: CRYPTO_ALGO, length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function encryptVault(entriesObj, key) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const enc = new TextEncoder();
+    const data = enc.encode(JSON.stringify(entriesObj));
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: CRYPTO_ALGO, iv: iv }, key, data
+    );
+    return { iv: buf2b64(iv), ciphertext: buf2b64(ciphertext) };
+}
+
+async function decryptVault(ivB64, ciphertextB64, key) {
+    try {
+        const iv = b642buf(ivB64);
+        const ciphertext = b642buf(ciphertextB64);
+        const decrypted = await crypto.subtle.decrypt(
+            { name: CRYPTO_ALGO, iv: iv }, key, ciphertext
+        );
+        const dec = new TextDecoder();
+        return JSON.parse(dec.decode(decrypted));
+    } catch (e) {
+        throw new Error('Invalid Master Password or corrupted vault.');
+    }
+}
+
+/* ==========================================================================
+   FILE I/O & FALLBACK
+   ========================================================================== */
+async function initStorage() {
+    if (!window.showOpenFilePicker) {
+        state.fallbackMode = true;
+        $('fallback-banner').style.display = 'block';
+        initIndexedDB();
+    }
+}
+
+function initIndexedDB() {
+    const request = indexedDB.open("PassSafeDB", 1);
+    request.onupgradeneeded = (e) => {
+        state.db = e.target.result;
+        if (!state.db.objectStoreNames.contains('vault')) {
+            state.db.createObjectStore('vault', { keyPath: 'id' });
+        }
+    };
+    request.onsuccess = (e) => state.db = e.target.result;
+    request.onerror = () => showToast("Error initializing local storage.");
+}
+
+async function saveToFile(vaultJSON) {
+    if (state.fallbackMode) {
+        const tx = state.db.transaction('vault', 'readwrite');
+        const store = tx.objectStore('vault');
+        store.put({ id: 'primary', data: vaultJSON });
+        setUnsaved(false);
+        showToast('Vault saved locally.');
+        return;
+    }
+
+    try {
+        if (!state.fileHandle) {
+            state.fileHandle = await window.showSaveFilePicker({
+                suggestedName: 'my-passwords.vault',
+                types: [{ description: 'PassSafe Vault', accept: {'application/json': ['.vault']} }]
+            });
+        }
+        const writable = await state.fileHandle.createWritable();
+        await writable.write(JSON.stringify(vaultJSON));
+        await writable.close();
+        setUnsaved(false);
+        showToast('Vault saved securely.');
+    } catch (e) {
+        if (e.name === 'SecurityError' || (e.message && e.message.includes('cross-origin'))) {
+            console.warn("File System API restricted. Falling back to IndexedDB.", e);
+            state.fallbackMode = true;
+            $('fallback-banner').style.display = 'block';
+            if (!state.db) initIndexedDB();
+            
+            const checkDB = () => {
+                if (state.db) saveToFile(vaultJSON);
+                else setTimeout(checkDB, 50);
+            };
+            checkDB();
+            return;
+        }
+        if (e.name !== 'AbortError') showToast('Error saving file: ' + e.message);
+    }
+}
+
+async function loadFromFile(action) {
+    if (state.fallbackMode) {
+        return new Promise((resolve) => {
+            const checkDB = () => {
+                if (!state.db) return setTimeout(checkDB, 50);
+                const tx = state.db.transaction('vault', 'readonly');
+                const store = tx.objectStore('vault');
+                const req = store.get('primary');
+                req.onsuccess = () => resolve(req.result ? req.result.data : null);
+                req.onerror = () => resolve(null);
+            };
+            checkDB();
+        });
+    }
+
+    try {
+        if (action === 'open') {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{ description: 'PassSafe Vault', accept: {'application/json': ['.vault']} }]
+            });
+            state.fileHandle = handle;
+        }
+        if (!state.fileHandle) return null;
+        const file = await state.fileHandle.getFile();
+        const text = await file.text();
+        return JSON.parse(text);
+    } catch (e) {
+        if (e.name === 'SecurityError' || (e.message && e.message.includes('cross-origin'))) {
+            console.warn("File System API restricted. Falling back to IndexedDB.", e);
+            state.fallbackMode = true;
+            $('fallback-banner').style.display = 'block';
+            if (!state.db) initIndexedDB();
+            return loadFromFile(action);
+        }
+        if (e.name !== 'AbortError') showToast('Error opening file: ' + e.message);
+        return null;
+    }
+}
+
+/* ==========================================================================
+   AUTH LOGIC
+   ========================================================================== */
+let authAction = null;
+
+function handleCreateVault() {
+    authAction = 'create';
+    $('auth-initial').classList.add('hidden');
+    $('auth-title').textContent = 'Set Master Password';
+    $('btn-auth-action').textContent = 'Create & Open';
+    $('btn-auth-action').onclick = processAuth;
+    show('auth-unlock');
+}
+
+function handleOpenVault() {
+    authAction = 'open';
+    $('auth-initial').classList.add('hidden');
+    $('auth-title').textContent = 'Unlock Vault';
+    $('btn-auth-action').textContent = 'Unlock';
+    $('btn-auth-action').onclick = processAuth;
+    show('auth-unlock');
+}
+
+function resetAuth() {
+    hide('auth-unlock');
+    show('auth-initial');
+    $('master-password').value = '';
+}
+
+async function processAuth() {
+    const pw = $('master-password').value;
+    if (!pw || pw.length < 4) return showToast("Password too short.");
+
+    try {
+        if (authAction === 'create') {
+            state.vaultSalt = crypto.getRandomValues(new Uint8Array(16));
+            state.masterKey = await deriveKey(pw, state.vaultSalt);
+            state.entries = [];
+            state.categories = ['Social', 'Work', 'Finance', 'Email', 'Other']; // Default Set
+            
+            const payload = { entries: state.entries, categories: state.categories };
+            const enc = await encryptVault(payload, state.masterKey);
+            const vaultData = { v: 1, salt: buf2b64(state.vaultSalt), iv: enc.iv, ciphertext: enc.ciphertext };
+            await saveToFile(vaultData);
+            
+            unlockSuccess();
+
+        } else if (authAction === 'open') {
+            const vaultData = await loadFromFile('open');
+            if (!vaultData) return;
+
+            if (!vaultData.salt || !vaultData.iv || !vaultData.ciphertext) {
+                return showToast("Invalid or corrupted vault format.");
+            }
+
+            state.vaultSalt = b642buf(vaultData.salt);
+            state.masterKey = await deriveKey(pw, state.vaultSalt);
+            
+            let decrypted = await decryptVault(vaultData.iv, vaultData.ciphertext, state.masterKey);
+            
+            // Auto-Migration for older v1 arrays to objects
+            if (Array.isArray(decrypted)) {
+                state.entries = decrypted;
+                state.categories = ['Social', 'Work', 'Finance', 'Email', 'Other'];
+            } else {
+                state.entries = decrypted.entries || [];
+                state.categories = decrypted.categories || ['Social', 'Work', 'Finance', 'Email', 'Other'];
+            }
+            
+            unlockSuccess();
+        }
+    } catch (e) {
+        showToast(e.message || "Authentication failed.");
+    }
+}
+
+function unlockSuccess() {
+    $('master-password').value = '';
+    hide('screen-auth');
+    show('screen-dashboard');
+    updateCategoryDropdowns();
+    setUnsaved(false);
+    renderEntries();
+    setupActivityListeners();
+}
+
+function lockVault() {
+    state.masterKey = null;
+    state.entries = [];
+    state.categories = [];
+    state.vaultSalt = null;
+    
+    $('entry-list').textContent = '';
+    $('master-password').value = '';
+    hide('screen-dashboard');
+    hide('screen-entry');
+    hide('screen-settings');
+    hide('screen-categories');
+    resetAuth();
+    show('screen-auth');
+    $('vault-status').textContent = 'Locked';
+    $('vault-status').style.background = 'var(--bg-input)';
+    
+    clearTimeout(state.lockTimer);
+    document.removeEventListener('mousemove', resetLockTimer);
+    document.removeEventListener('keydown', resetLockTimer);
+}
+
+/* ==========================================================================
+   AUTO-LOCK TIMERS
+   ========================================================================== */
+function setupActivityListeners() {
+    document.addEventListener('mousemove', resetLockTimer);
+    document.addEventListener('keydown', resetLockTimer);
+    resetLockTimer();
+}
+
+function resetLockTimer() {
+    if (!state.masterKey) return;
+    clearTimeout(state.lockTimer);
+    state.lockTimer = setTimeout(() => {
+        if (state.masterKey) {
+            lockVault();
+            showToast("Vault auto-locked due to inactivity.");
+        }
+    }, LOCK_TIMEOUT_MS);
+}
+
+/* ==========================================================================
+   VAULT UI LOGIC (UPDATED FOR GRID LAYOUT)
+   ========================================================================== */
+function renderEntries() {
+    const list = $('entry-list');
+    list.textContent = '';
+
+    const query = $('search-input').value.toLowerCase();
+    const filterCat = $('filter-category').value;
+    const sortOrd = $('sort-order').value;
+
+    let filtered = state.entries.filter(e => {
+        const matchQ = (e.title||'').toLowerCase().includes(query) || 
+                       (e.username||'').toLowerCase().includes(query) || 
+                       (e.url||'').toLowerCase().includes(query);
+        const matchC = filterCat === 'All' || e.category === filterCat;
+        return matchQ && matchC;
+    });
+
+    if (sortOrd === 'name') {
+        filtered.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+    } else {
+        filtered.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    }
+
+    if (filtered.length === 0 && state.entries.length === 0) {
+        show('empty-state');
+    } else {
+        hide('empty-state');
+    }
+
+    filtered.forEach(entry => {
+        const card = el('div', { className: 'entry-card' });
+        card.onclick = (e) => { if(!e.target.closest('button')) editEntry(entry.id); };
+
+        // CARD HEADER: Avatar + Title + Username
+        const header = el('div', { className: 'card-header' });
+        
+        // Generate a dynamic avatar based on the first letter of the title
+        const firstLetter = (entry.title || 'U').charAt(0).toUpperCase();
+        // Cycle through a set of gamified colors for avatars
+        const colors = ['var(--color-primary)', 'var(--color-danger)', 'var(--color-warning)', 'var(--color-secondary)'];
+        const colorIndex = firstLetter.charCodeAt(0) % colors.length;
+        const avatar = el('div', { className: 'card-avatar', style: `background-color: ${colors[colorIndex]};` }, firstLetter);
+
+        const info = el('div', { className: 'entry-info' });
+        const titleCont = el('h3', {}, entry.title || 'Unnamed');
+        if (entry.favorite) titleCont.textContent += ' ⭐';
+        
+        info.appendChild(titleCont);
+        info.appendChild(el('p', {}, entry.username || 'No username'));
+        
+        header.appendChild(avatar);
+        header.appendChild(info);
+
+        // CARD ACTIONS: Separated by dashed line
+        const actions = el('div', { className: 'entry-actions' });
+        
+        // Use a div to push the right side buttons if needed, but flex justify-content handles it well.
+        const leftActions = el('div', { style: 'display: flex; gap: 8px;' });
+        const rightActions = el('div', { style: 'display: flex; gap: 8px;' });
+
+        const copyUser = el('button', { className: 'icon-btn icon-btn-primary-hover', title: 'Copy Username' });
+        copyUser.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+        copyUser.onclick = () => copyToClipboard(entry.username);
+
+        const copyPw = el('button', { className: 'icon-btn icon-btn-primary-hover', title: 'Copy Password' });
+        copyPw.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4h2.35l2 2 2-2 2 2 3-3v-5h-7.35zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>';
+        copyPw.onclick = () => copyToClipboard(entry.password);
+
+        const editBtn = el('button', { className: 'icon-btn icon-btn-warning-hover', title: 'Edit Entry' });
+        editBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+        editBtn.onclick = () => editEntry(entry.id);
+
+        const deleteBtn = el('button', { className: 'icon-btn icon-btn-danger', title: 'Delete Entry' });
+        deleteBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+        deleteBtn.onclick = () => deleteEntry(entry.id);
+
+        leftActions.appendChild(copyUser);
+        leftActions.appendChild(copyPw);
+        
+        rightActions.appendChild(editBtn);
+        rightActions.appendChild(deleteBtn);
+
+        actions.appendChild(leftActions);
+        actions.appendChild(rightActions);
+
+        card.appendChild(header);
+        card.appendChild(actions);
+        list.appendChild(card);
+    });
+}
+
+function showEntryForm() {
+    $('entry-id').value = '';
+    $('entry-title').value = '';
+    $('entry-username').value = '';
+    $('entry-password').value = '';
+    $('entry-url').value = '';
+    $('entry-category').value = 'Other';
+    $('entry-notes').value = '';
+    $('entry-favorite').checked = false;
+    $('btn-delete-entry').style.display = 'none';
+    $('entry-form-title').textContent = 'Add Entry';
+    updateStrength();
+    
+    hide('screen-dashboard');
+    show('screen-entry');
+}
+
+function hideEntryForm() {
+    hide('screen-entry');
+    show('screen-dashboard');
+}
+
+function editEntry(id) {
+    const entry = state.entries.find(e => e.id === id);
+    if (!entry) return;
+
+    $('entry-id').value = entry.id;
+    $('entry-title').value = entry.title;
+    $('entry-username').value = entry.username;
+    $('entry-password').value = entry.password;
+    $('entry-url').value = entry.url || '';
+    $('entry-category').value = entry.category || 'Other';
+    $('entry-notes').value = entry.notes || '';
+    $('entry-favorite').checked = !!entry.favorite;
+    $('btn-delete-entry').style.display = 'block';
+    $('entry-form-title').textContent = 'Edit Entry';
+    updateStrength();
+    
+    hide('screen-dashboard');
+    show('screen-entry');
+}
+
+async function saveEntry() {
+    const id = $('entry-id').value;
+    const entry = {
+        id: id || generateUUID(),
+        title: $('entry-title').value.trim(),
+        username: $('entry-username').value.trim(),
+        password: $('entry-password').value,
+        url: $('entry-url').value.trim(),
+        category: $('entry-category').value,
+        notes: $('entry-notes').value.trim(),
+        favorite: $('entry-favorite').checked,
+        updatedAt: new Date().toISOString(),
+        createdAt: id ? state.entries.find(e=>e.id===id).createdAt : new Date().toISOString()
+    };
+
+    if (!entry.title) return showToast('Title is required.');
+
+    if (id) {
+        const idx = state.entries.findIndex(e => e.id === id);
+        state.entries[idx] = entry;
+    } else {
+        state.entries.push(entry);
+    }
+
+    setUnsaved(true);
+    await persistVault();
+    hideEntryForm();
+    renderEntries();
+}
+
+// Updated delete function to handle direct ID passing from the dashboard card
+function deleteEntry(passedId) {
+    // If called from the dashboard, passedId is the string.
+    // If called from the form button, passedId might be the mouse click event, so we use the hidden input.
+    const id = typeof passedId === 'string' ? passedId : $('entry-id').value;
+    
+    if (!id) return;
+
+    showModal({
+        title: 'Delete Password',
+        message: 'Are you sure you want to delete this entry?',
+        type: 'confirm',
+        danger: true,
+        confirmText: 'Delete',
+        onConfirm: () => {
+            state.entries = state.entries.filter(e => e.id !== id);
+            setUnsaved(true);
+            persistVault();
+            hideEntryForm(); // Ensure form hides if we were inside it
+            renderEntries();
+        }
+    });
+}
+
+async function persistVault() {
+    if (!state.masterKey) return;
+    try {
+        const payload = { entries: state.entries, categories: state.categories };
+        const enc = await encryptVault(payload, state.masterKey);
+        const vaultData = { v: 1, salt: buf2b64(state.vaultSalt), iv: enc.iv, ciphertext: enc.ciphertext };
+        await saveToFile(vaultData);
+    } catch (e) {
+        showToast('Error persisting data.');
+    }
+}
+
+/* ==========================================================================
+   CATEGORY MANAGEMENT LOGIC
+   ========================================================================== */
+function updateCategoryDropdowns() {
+    const filterSel = $('filter-category');
+    const entrySel = $('entry-category');
+    
+    const currentFilter = filterSel.value;
+    const currentEntry = entrySel.value;
+
+    filterSel.innerHTML = '<option value="All">All Categories</option>';
+    entrySel.innerHTML = '';
+
+    state.categories.forEach(cat => {
+        filterSel.innerHTML += `<option value="${cat}">${cat}</option>`;
+        entrySel.innerHTML += `<option value="${cat}">${cat}</option>`;
+    });
+
+    if (state.categories.includes(currentFilter) || currentFilter === 'All') filterSel.value = currentFilter;
+    if (state.categories.includes(currentEntry)) entrySel.value = currentEntry;
+}
+
+function openCategories() {
+    hide('screen-dashboard');
+    show('screen-categories');
+    renderCategoryList();
+}
+
+function closeCategories() {
+    hide('screen-categories');
+    show('screen-dashboard');
+}
+
+function renderCategoryList() {
+    const list = $('category-list');
+    list.innerHTML = '';
+    
+    state.categories.forEach((cat, index) => {
+        const row = el('div', { style: 'background: var(--bg-input); padding: 16px 20px; border-radius: var(--border-radius-md); border: var(--border-width) solid var(--border-color); box-shadow: 0 var(--shadow-sm) 0 var(--border-color); display: flex; justify-content: space-between; align-items: center;' });
+        
+        const nameSpan = el('span', { style: 'font-weight: 900; color: var(--text-primary); text-transform: uppercase;' }, cat);
+        
+        const actions = el('div', { style: 'display: flex; gap: 8px;' });
+        
+        const editBtn = el('button', { className: 'icon-btn icon-btn-sm icon-btn-warning-hover', title: 'Rename Category' });
+        editBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+        editBtn.onclick = () => editCategory(index);
+        
+        const delBtn = el('button', { className: 'icon-btn icon-btn-sm icon-btn-danger', title: 'Delete Category' });
+        delBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+        delBtn.onclick = () => deleteCategory(index);
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+        
+        row.appendChild(nameSpan);
+        row.appendChild(actions);
+        list.appendChild(row);
+    });
+}
+
+async function addCategory() {
+    const input = $('new-category-name');
+    const name = input.value.trim();
+    if (!name) return showToast('Category name required.');
+    
+    // Case insensitive duplicate check
+    if (state.categories.some(c => c.toLowerCase() === name.toLowerCase())) {
+        return showToast('Category already exists.');
+    }
+    
+    state.categories.push(name);
+    input.value = '';
+    setUnsaved(true);
+    await persistVault();
+    updateCategoryDropdowns();
+    renderCategoryList();
+}
+
+function editCategory(index) {
+    const oldName = state.categories[index];
+    
+    showModal({
+        title: 'Rename Category',
+        message: `Enter new name for "${oldName}":`,
+        type: 'prompt',
+        defaultValue: oldName,
+        confirmText: 'Save',
+        onConfirm: async (newName) => {
+            if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
+            const finalName = newName.trim();
+            
+            if (state.categories.some(c => c.toLowerCase() === finalName.toLowerCase() && c !== oldName)) {
+                return showToast('Category already exists.');
+            }
+
+            state.categories[index] = finalName;
+            
+            // Update all entries using this category
+            state.entries.forEach(e => {
+                if (e.category === oldName) e.category = finalName;
+            });
+
+            setUnsaved(true);
+            await persistVault();
+            updateCategoryDropdowns();
+            renderCategoryList();
+            renderEntries(); // Updates dashboard UI silently
+        }
+    });
+}
+
+function deleteCategory(index) {
+    const catName = state.categories[index];
+    if (state.categories.length <= 1) return showToast('Cannot delete the last category.');
+    
+    // Warn user that existing entries will be reassigned (Bug Fixed here)
+    const fallback = state.categories === catName ? state.categories : state.categories;
+    
+    showModal({
+        title: 'Delete Category',
+        message: `Delete category "${catName}"? \nPasswords using this will be moved to "${fallback}".`,
+        type: 'confirm',
+        danger: true,
+        confirmText: 'Delete',
+        onConfirm: async () => {
+            state.categories.splice(index, 1);
+            
+            // Reassign orphaned entries to fallback
+            state.entries.forEach(e => {
+                if (e.category === catName) e.category = fallback;
+            });
+
+            setUnsaved(true);
+            await persistVault();
+            updateCategoryDropdowns();
+            renderCategoryList();
+            renderEntries();
+        }
+    });
+}
+
+/* ==========================================================================
+   UTILITIES & SETTINGS
+   ========================================================================== */
+function toggleTheme() {
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+}
+
+function togglePasswordVisibility(id) {
+    const el = $(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function generatePassword() {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+    let pw = "";
+    const randomVals = crypto.getRandomValues(new Uint32Array(16));
+    for (let i = 0; i < 16; i++) {
+        pw += chars[randomVals[i] % chars.length];
+    }
+    $('entry-password').value = pw;
+    togglePasswordVisibility('entry-password'); // show it
+    updateStrength();
+}
+
+function updateStrength() {
+    const pw = $('entry-password').value;
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^a-zA-Z0-9]/.test(pw)) score++;
+
+    const bar = $('pw-strength-bar');
+    if (pw.length === 0) { bar.style.width = '0%'; return; }
+    
+    if (score < 2) { bar.style.width = '33%'; bar.style.backgroundColor = 'var(--color-danger)'; }
+    else if (score === 2) { bar.style.width = '66%'; bar.style.backgroundColor = 'var(--color-warning)'; }
+    else { bar.style.width = '100%'; bar.style.backgroundColor = 'var(--color-success)'; }
+}
+
+async function copyToClipboard(text) {
+    if (!text) return;
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard');
+        setTimeout(async () => {
+            try { await navigator.clipboard.writeText(''); } catch(e){} // Auto-clear
+        }, 30000);
+    } catch (e) {
+        showToast('Clipboard API not available.');
+    }
+}
+
+function openSettings() {
+    hide('screen-dashboard');
+    show('screen-settings');
+}
+
+function closeSettings() {
+    hide('screen-settings');
+    show('screen-dashboard');
+}
+
+async function changeMasterPassword() {
+    const npw = $('new-master-password').value;
+    if (npw.length < 4) return showToast('Password too short.');
+    try {
+        state.vaultSalt = crypto.getRandomValues(new Uint8Array(16));
+        state.masterKey = await deriveKey(npw, state.vaultSalt);
+        setUnsaved(true);
+        await persistVault();
+        $('new-master-password').value = '';
+        showToast('Master password updated.');
+        closeSettings();
+    } catch (e) {
+        showToast('Error changing password.');
+    }
+}
+
+function exportVault() {
+    showModal({
+        title: 'Export Vault',
+        message: 'Warning: This exports your passwords in plain text. Continue?',
+        type: 'confirm',
+        danger: true,
+        confirmText: 'Export',
+        onConfirm: () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.entries, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "passsafe_export.json");
+            dlAnchorElem.click();
+        }
+    });
+}
+
+function importVault(e) {
+    const file = e.target.files;
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (!Array.isArray(imported)) throw new Error("Invalid format");
+            
+            imported.forEach(imp => {
+                const idx = state.entries.findIndex(x => x.id === imp.id);
+                if (idx > -1) state.entries[idx] = imp;
+                else state.entries.push(imp);
+                
+                // Dynamically absorb missing categories from imported JSON
+                if (imp.category && !state.categories.includes(imp.category)) {
+                    state.categories.push(imp.category);
+                }
+            });
+            
+            setUnsaved(true);
+            await persistVault();
+            updateCategoryDropdowns();
+            renderEntries();
+            showToast('Import successful.');
+            closeSettings();
+        } catch (err) {
+            showToast('Invalid JSON file.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+/* ==========================================================================
+   PWA & GUARDRAILS
+   ========================================================================== */
+window.addEventListener('beforeunload', (e) => {
+    if (state.unsaved) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// Inline Manifest setup
+const manifestJSON = {
+    name: "PassSafe",
+    short_name: "PassSafe",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#121212",
+    theme_color: "#008080",
+    icons: [{
+        src: "data:image/svg+xml;base64," + btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="#008080"><rect width="192" height="192" rx="40" fill="#1e1e1e"/><path d="M126 82h-6V66c0-13.2-10.8-24-24-24s-24 10.8-24 24v16h-6c-6.6 0-12 5.4-12 12v60c0 6.6 5.4 12 12 12h60c6.6 0 12-5.4 12-12V94c0-6.6-5.4-12-12-12zm-42-16c0-6.6 5.4-12 12-12s12 5.4 12 12v16H84V66zm12 63c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z" fill="#008080"/></svg>`),
+        sizes: "192x192",
+        type: "image/svg+xml"
+    }]
+};
+$('manifest-link').href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestJSON));
+
+// Boot
+window.onload = () => {
+    initStorage();
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Registration failed.', err));
+    }
+};
+
+</script>
 </body>
 </html>
